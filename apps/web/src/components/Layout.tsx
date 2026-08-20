@@ -16,8 +16,10 @@ import {
   X, 
   FileText,
   Sun,
-  Moon
+  Moon,
+  Terminal as TerminalIcon
 } from 'lucide-react';
+import { TerminalDrawer } from './TerminalDrawer';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, organization, role, logout } = useAuth();
@@ -26,11 +28,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === '`' || e.key === '~')) {
+        e.preventDefault();
+        setTerminalOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -145,6 +159,23 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                   </NavLink>
                 );
               })}
+
+              {/* Terminal Quick Launcher */}
+              <div className="pt-4 mt-4 border-t border-zinc-800/80">
+                <button
+                  onClick={() => setTerminalOpen(true)}
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-mono font-bold rounded bg-emerald-950/30 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-900/40 hover:border-emerald-500/60 transition-all group shadow-sm"
+                  title="Open Terminal (Ctrl + `)"
+                >
+                  <div className="flex items-center">
+                    <TerminalIcon className="w-4 h-4 mr-2 text-emerald-400 group-hover:animate-pulse shrink-0" />
+                    <span>Quant Terminal</span>
+                  </div>
+                  <kbd className="text-[10px] px-1 py-0.5 bg-zinc-900 text-emerald-500 border border-emerald-500/30 rounded font-mono">
+                    ^`
+                  </kbd>
+                </button>
+              </div>
             </nav>
           </div>
         </div>
@@ -294,6 +325,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           {/* Right: User info, Theme Switcher & triggers */}
           <div className="flex items-center space-x-4">
             
+            {/* Terminal Drawer Trigger */}
+            <button
+              onClick={() => setTerminalOpen(prev => !prev)}
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-900/30 hover:border-emerald-500/50 transition-all font-mono text-xs"
+              title="Toggle Quant Terminal (Ctrl + `)"
+            >
+              <TerminalIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline font-bold">Terminal</span>
+            </button>
+
             {/* Theme Toggle Trigger */}
             <button
               onClick={toggleTheme}
@@ -380,6 +421,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           {children}
         </main>
       </div>
+
+      {/* QUANT TERMINAL DRAWER */}
+      <TerminalDrawer 
+        isOpen={terminalOpen} 
+        onClose={() => setTerminalOpen(false)} 
+      />
 
     </div>
   );
