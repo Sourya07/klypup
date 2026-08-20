@@ -357,27 +357,27 @@ export const ResearchResults: React.FC = () => {
         <div className="grid grid-cols-2 gap-4">
           <MetricCard 
             label="P/E Ratio" 
-            value={report.metrics?.peRatio || 'N/A'} 
-            change="Premium to Peer Group" 
+            value={report.metrics?.peRatio ? `${report.metrics.peRatio}x` : 'N/A'} 
+            change={report.metrics?.peRatio ? "Market Multiple" : "Metric Pending"} 
             changeType="neutral"
           />
           <MetricCard 
             label="EPS (Diluted)" 
-            value={`$${report.metrics?.eps || 'N/A'}`} 
-            change="+6.2% YoY" 
-            changeType="positive"
+            value={report.metrics?.eps ? `$${report.metrics.eps}` : 'N/A'} 
+            change={report.metrics?.eps ? "GAAP Diluted" : "Metric Pending"} 
+            changeType={report.metrics?.eps ? "positive" : "neutral"}
           />
           <MetricCard 
             label="Revenue Growth" 
             value={report.metrics?.revenueGrowth || 'N/A'} 
-            change="Stable Expansion" 
-            changeType="positive"
+            change={report.metrics?.revenueGrowth && !['Unavailable', 'N/A', null].includes(report.metrics.revenueGrowth) ? "YoY Trailing" : "SEC EDGAR Pending"} 
+            changeType={report.metrics?.revenueGrowth && !['Unavailable', 'N/A', null].includes(report.metrics.revenueGrowth) ? "positive" : "neutral"}
           />
           <MetricCard 
             label="Net Profit Margin" 
             value={report.metrics?.profitMargin || 'N/A'} 
-            change="Industry Leading" 
-            changeType="positive"
+            change={report.metrics?.profitMargin && !['Unavailable', 'N/A', null].includes(report.metrics.profitMargin) ? "GAAP Margin" : "SEC EDGAR Pending"} 
+            changeType={report.metrics?.profitMargin && !['Unavailable', 'N/A', null].includes(report.metrics.profitMargin) ? "positive" : "neutral"}
           />
         </div>
 

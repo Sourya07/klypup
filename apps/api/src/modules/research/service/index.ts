@@ -207,7 +207,7 @@ Available tools:
 Return ONLY a JSON array of strings representing the tools needed. Example: ["MARKET_DATA", "NEWS"]. Do not include any other text or markdown formatting.`;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -230,7 +230,7 @@ Return ONLY a JSON array of strings representing the tools needed. Example: ["MA
   return ['MARKET_DATA', 'SEC_FILINGS', 'NEWS'];
 }
 
-async function buildRealDataReport(ticker: string, prompt: string, data: RealResearchData) {
+export async function buildRealDataReport(ticker: string, prompt: string, data: RealResearchData) {
   const aiReport = await callGeminiAPI(ticker, prompt, data);
   if (aiReport) return aiReport;
   return synthesizeReportFromRealData(ticker, prompt, data);
@@ -277,7 +277,7 @@ Verified data payload:
 ${JSON.stringify(data, null, 2)}`;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

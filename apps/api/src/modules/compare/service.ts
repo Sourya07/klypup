@@ -163,7 +163,7 @@ Focus on relative valuation, growth trade-offs, and balance sheet leverage. Do n
 Data payload:
 ${JSON.stringify(companies, null, 2)}`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -315,22 +315,104 @@ export const TerminalDrawer: React.FC<{
 
         const run = await researchService.createRun(ticker, prompt);
 
-        pushOutput(
-          'success',
-          (
-            <div className="font-mono text-xs space-y-1.5 border-l-2 border-emerald-500 pl-3 my-1">
-              <div className="text-emerald-400 font-bold">✓ AI RESEARCH JOB CREATED SUCCESSFULLY</div>
-              <div className="text-zinc-300">Run ID: <span className="text-zinc-500">{run.id}</span> | Ticker: <b>{ticker}</b></div>
-              <div className="text-zinc-400 text-[11px]">Prompt: "{prompt}"</div>
-              <button 
-                onClick={() => navigate(run.reportId ? `/reports/${run.reportId}` : `/research/new`)}
-                className="mt-1 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500 text-zinc-950 font-bold rounded text-[11px] hover:bg-emerald-400 transition-colors"
-              >
-                View Live Report Document →
-              </button>
-            </div>
-          )
-        );
+        // Poll for completion and stream into terminal
+        let pollCount = 0;
+        const maxPolls = 20;
+        let completedReport = null;
+
+        while (pollCount < maxPolls) {
+          await new Promise(r => setTimeout(r, 2000));
+          pollCount++;
+          try {
+            const currentRun = await researchService.getRun(run.id);
+            if (currentRun.status === 'COMPLETED' && currentRun.reportId) {
+              completedReport = await researchService.getReport(currentRun.reportId);
+              break;
+            } else if (currentRun.status === 'FAILED') {
+              throw new Error(currentRun.error || 'Research pipeline failed.');
+            }
+          } catch (e: any) {
+            if (e.message && e.message.includes('failed')) throw e;
+          }
+        }
+
+        if (completedReport) {
+          pushOutput(
+            'success',
+            (
+              <div className="font-mono text-xs space-y-2 border-l-2 border-emerald-500 pl-3 my-1">
+                <div className="text-emerald-400 font-bold flex items-center justify-between">
+                  <span>✓ AI RESEARCH SYNTHESIS COMPLETED</span>
+                  <span className="text-[10px] text-zinc-500">{completedReport.ticker} // {completedReport.companyName}</span>
+                </div>
+                <div className="text-zinc-200 font-bold text-sm">{completedReport.title}</div>
+                
+                {/* Executive Summary */}
+                <div className="text-zinc-400 bg-zinc-900/60 p-2.5 rounded border border-zinc-800 leading-relaxed text-[11px]">
+                  {completedReport.summary}
+                </div>
+
+                {/* Financial Metrics Table */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <div className="p-2 border border-zinc-800 rounded bg-zinc-900/40">
+                    <div className="text-[10px] text-zinc-500 uppercase">P/E Ratio</div>
+                    <div className="font-bold text-white">{completedReport.metrics?.peRatio ? `${completedReport.metrics.peRatio}x` : 'N/A'}</div>
+                  </div>
+                  <div className="p-2 border border-zinc-800 rounded bg-zinc-900/40">
+                    <div className="text-[10px] text-zinc-500 uppercase">Diluted EPS</div>
+                    <div className="font-bold text-white">{completedReport.metrics?.eps ? `$${completedReport.metrics.eps}` : 'N/A'}</div>
+                  </div>
+                  <div className="p-2 border border-zinc-800 rounded bg-zinc-900/40">
+                    <div className="text-[10px] text-zinc-500 uppercase">Revenue Growth</div>
+                    <div className="font-bold text-emerald-400">{completedReport.metrics?.revenueGrowth || 'N/A'}</div>
+                  </div>
+                  <div className="p-2 border border-zinc-800 rounded bg-zinc-900/40">
+                    <div className="text-[10px] text-zinc-500 uppercase">Profit Margin</div>
+                    <div className="font-bold text-emerald-400">{completedReport.metrics?.profitMargin || 'N/A'}</div>
+                  </div>
+                </div>
+
+                {/* Key Drivers */}
+                {completedReport.keyDrivers && completedReport.keyDrivers.length > 0 && (
+                  <div className="space-y-1 text-[11px] pt-1">
+                    <div className="text-zinc-400 font-bold uppercase text-[10px]">Key Valuation Drivers:</div>
+                    {completedReport.keyDrivers.slice(0, 3).map((d, i) => (
+                      <div key={i} className="text-zinc-300 flex items-start space-x-1.5">
+                        <span className="text-emerald-400 font-bold">•</span>
+                        <span>{d}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="pt-1.5">
+                  <button 
+                    onClick={() => navigate(`/reports/${completedReport.id}`)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-zinc-950 font-bold rounded text-xs hover:bg-emerald-400 transition-colors"
+                  >
+                    Open Full Interactive Report Document →
+                  </button>
+                </div>
+              </div>
+            )
+          );
+        } else {
+          pushOutput(
+            'success',
+            (
+              <div className="font-mono text-xs space-y-1.5 border-l-2 border-emerald-500 pl-3 my-1">
+                <div className="text-emerald-400 font-bold">✓ AI RESEARCH JOB CREATED (PROCESSING IN BACKGROUND)</div>
+                <div className="text-zinc-300">Run ID: <span className="text-zinc-500">{run.id}</span> | Ticker: <b>{ticker}</b></div>
+                <button 
+                  onClick={() => navigate('/reports')}
+                  className="mt-1 inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500 text-zinc-950 font-bold rounded text-[11px] hover:bg-emerald-400 transition-colors"
+                >
+                  View in Saved Reports →
+                </button>
+              </div>
+            )
+          );
+        }
       }
 
       // 7. COMPARE
