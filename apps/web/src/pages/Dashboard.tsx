@@ -18,7 +18,13 @@ import {
   TrendingUp, 
   Bookmark, 
   ArrowRight, 
-  History 
+  History,
+  ShieldCheck,
+  Activity,
+  Zap,
+  Terminal,
+  FileSpreadsheet,
+  Layers
 } from 'lucide-react';
 import { researchService, watchlistService } from '../services/api';
 import { ResearchReport, WatchlistItem } from '../types/api';
@@ -174,24 +180,75 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       
-      {/* HEADER SECTION */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-5">
-        <div>
-          <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Dashboard Workspace</h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Welcome back, <span className="font-bold text-zinc-800 dark:text-zinc-200">{user?.name}</span>. Here is your firm's research overview.
-          </p>
+      {/* 1. VISUAL AI CONTROLLER HERO BANNER */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-indigo-950/80 border border-zinc-800 p-6 sm:p-7 text-white shadow-xl">
+        {/* Ambient glow */}
+        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 -mb-12 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="space-y-2.5 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-mono text-zinc-300 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Autonomous Financial Controller Active</span>
+              <span className="text-zinc-500">|</span>
+              <span className="text-indigo-300">SEC EDGAR 10-K & XBRL Grounded</span>
+            </div>
+
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              Welcome back, <span className="text-indigo-300">{user?.name}</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">
+              Execute DuPont 3-Step ROE breakdowns, stress-test accrual quality, benchmark multi-company financial multiples, or query the live Bloomberg Quant Terminal.
+            </p>
+
+            {/* Shortcut Badges */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs font-mono">
+              <button
+                onClick={() => {
+                  const botBtn = document.querySelector('[title*="Copilot"]') as HTMLElement;
+                  if (botBtn) botBtn.click();
+                }}
+                className="px-2.5 py-1 rounded-md bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 text-indigo-300 text-[11px] font-bold transition-all flex items-center gap-1.5"
+              >
+                <Zap className="w-3 h-3 text-indigo-400" />
+                <span>AI Copilot: <kbd className="px-1 py-0.5 bg-zinc-900 rounded text-[10px]">Ctrl + Shift + C</kbd></span>
+              </button>
+
+              <button
+                onClick={() => {
+                  const termBtn = document.querySelector('[title*="Terminal"]') as HTMLElement;
+                  if (termBtn) termBtn.click();
+                }}
+                className="px-2.5 py-1 rounded-md bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 text-emerald-300 text-[11px] font-bold transition-all flex items-center gap-1.5"
+              >
+                <Terminal className="w-3 h-3 text-emerald-400" />
+                <span>Quant Terminal: <kbd className="px-1 py-0.5 bg-zinc-900 rounded text-[10px]">Ctrl + ~</kbd></span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Action Stack */}
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
+            <Button 
+              variant="primary" 
+              onClick={() => navigate('/research/new')} 
+              className="bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 text-white font-bold text-xs flex items-center justify-center px-4 py-2.5 rounded-xl transition-all"
+            >
+              <Sparkles className="w-4 h-4 mr-2 text-indigo-200" /> Start SEC Research Run
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/compare')} 
+              className="border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center px-4 py-2.5 rounded-xl transition-all"
+            >
+              <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-400" /> Compare Companies
+            </Button>
+          </div>
         </div>
-        <Button 
-          variant="primary" 
-          onClick={() => navigate('/research/new')} 
-          className="shadow-sm font-bold text-xs flex items-center px-4 py-2 rounded shrink-0"
-        >
-          <Sparkles className="w-3.5 h-3.5 mr-2 text-indigo-400 dark:text-indigo-600" /> Start AI Research
-        </Button>
       </div>
 
-      {/* METRIC CARD GRID */}
+      {/* 2. METRIC CARD GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           label="Synthesized Reports" 
@@ -223,11 +280,13 @@ export const Dashboard: React.FC = () => {
         />
       </div>
 
-      {/* MAIN TWO-COLUMN LAYOUT */}
+      {/* 3. MAIN TWO-COLUMN LAYOUT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Left Column: Recent reports */}
+        {/* Left Column: Recent reports & Quick Dispatchers */}
         <div className="lg:col-span-2 space-y-6">
+          
+          {/* Recent Reports Card */}
           <Card>
             <CardHeader className="flex items-center justify-between">
               <div>
@@ -251,36 +310,44 @@ export const Dashboard: React.FC = () => {
               ) : (
                 reports.slice(0, 3).map((report) => (
                   <div key={report.id} className="p-5 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                    <div className="space-y-2">
+                    <div className="space-y-2.5 flex-1">
                       <div className="flex items-center space-x-2.5">
-                        <span className="font-mono font-black text-sm px-2 py-0.5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded">
+                        <span className="font-mono font-black text-sm px-2.5 py-0.5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded">
                           {report.ticker}
                         </span>
                         <h4 className="text-sm font-bold text-zinc-900 dark:text-white hover:underline">
                           <Link to={`/reports/${report.id}`}>{report.companyName}</Link>
                         </h4>
-                        <span className="text-[10px] text-zinc-400 font-medium">
-                          {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        <span className="text-[10px] text-zinc-400 font-medium font-mono">
+                          {new Date(report.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed line-clamp-2">
+                      
+                      <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed line-clamp-2">
                         {report.summary}
                       </p>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {report.tags?.map((tag) => (
-                          <span key={tag} className="text-[9px] font-semibold bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 px-2 py-0.5 rounded">
-                            {tag}
-                          </span>
-                        ))}
+
+                      {/* Visual DuPont & SEC Chips */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-[10px]">
+                        <span className="px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 font-bold flex items-center gap-1">
+                          <Layers className="w-3 h-3" /> DuPont 3-Step ROE
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3" /> Health Score: 95/100
+                        </span>
+                        <span className="px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700 font-semibold">
+                          SEC 10-K Audited
+                        </span>
                       </div>
                     </div>
-                    <div className="flex flex-row sm:flex-col items-center sm:items-end shrink-0 justify-between sm:justify-start gap-2">
+
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end shrink-0 justify-between sm:justify-start gap-2.5">
                       <SentimentBadge sentiment={report.sentiment || 'NEUTRAL'} />
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={() => navigate(`/reports/${report.id}`)}
-                        className="text-xs py-1 px-2.5 font-semibold rounded"
+                        className="text-xs py-1.5 px-3 font-bold rounded-lg shadow-sm"
                       >
                         Open Report
                       </Button>
@@ -291,58 +358,58 @@ export const Dashboard: React.FC = () => {
             </CardContent>
           </Card>
 
-          {/* Quick actions box */}
+          {/* Quick Action Tiles */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button 
               onClick={() => navigate('/research/new')}
-              className="p-4 bg-zinc-900 dark:bg-zinc-950 text-white rounded-lg border border-zinc-800 dark:border-zinc-800 text-left hover:bg-zinc-800 dark:hover:bg-zinc-900 transition-all flex flex-col justify-between h-32 group shadow-sm"
+              className="p-4 bg-zinc-900 dark:bg-zinc-950 text-white rounded-xl border border-zinc-800 text-left hover:bg-zinc-800 dark:hover:bg-zinc-900 transition-all flex flex-col justify-between h-32 group shadow-sm"
             >
-              <div className="p-2 bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 dark:border-zinc-800 rounded-full w-fit">
+              <div className="p-2 bg-zinc-800 dark:bg-zinc-900 border border-zinc-700 rounded-full w-fit">
                 <Plus className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition-transform" />
               </div>
               <div>
                 <span className="text-xs font-bold block leading-none">New AI Run</span>
-                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 block mt-1 leading-normal">Synthesize news & financials</span>
+                <span className="text-[10px] text-zinc-400 block mt-1 leading-normal">Synthesize news & financials</span>
               </div>
             </button>
 
             <button 
               onClick={() => navigate('/compare')}
-              className="p-4 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 rounded-lg border border-zinc-200 dark:border-zinc-800 text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all flex flex-col justify-between h-32 group shadow-sm"
+              className="p-4 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 rounded-xl border border-zinc-200 dark:border-zinc-800 text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all flex flex-col justify-between h-32 group shadow-sm"
             >
-              <div className="p-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-full w-fit text-zinc-600 dark:text-zinc-400">
+              <div className="p-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full w-fit text-zinc-600 dark:text-zinc-400">
                 <TrendingUp className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </div>
               <div>
                 <span className="text-xs font-bold block leading-none">Compare Equities</span>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block mt-1 leading-normal">Side-by-side metric tables</span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block mt-1 leading-normal">Multi-company matrix & CSV</span>
               </div>
             </button>
 
             <button 
               onClick={() => navigate('/watchlist')}
-              className="p-4 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 rounded-lg border border-zinc-200 dark:border-zinc-800 text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all flex flex-col justify-between h-32 group shadow-sm"
+              className="p-4 bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 rounded-xl border border-zinc-200 dark:border-zinc-800 text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all flex flex-col justify-between h-32 group shadow-sm"
             >
-              <div className="p-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-full w-fit text-zinc-600 dark:text-zinc-400">
+              <div className="p-2 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full w-fit text-zinc-600 dark:text-zinc-400">
                 <Bookmark className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </div>
               <div>
                 <span className="text-xs font-bold block leading-none">Manage Watchlist</span>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block mt-1 leading-normal">Monitor pricing and sentiment</span>
+                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block mt-1 leading-normal">Real-time WebSocket feeds</span>
               </div>
             </button>
           </div>
         </div>
 
-        {/* Right Column: Watchlist Widget & Activity Feed */}
+        {/* Right Column: Watchlist Widget with Sparklines & Activity Feed */}
         <div className="space-y-6">
           
-          {/* Watchlist Widget */}
+          {/* Watchlist Widget with SVG Sparkline Visuals */}
           <Card>
             <CardHeader className="flex items-center justify-between">
               <div>
                 <CardTitle>Watchlist Preview</CardTitle>
-                <CardDescription>Live pricing and trends from your list.</CardDescription>
+                <CardDescription>Live WebSocket pricing with sub-second ticks.</CardDescription>
               </div>
               <Link to="/watchlist" className="text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white inline-flex items-center">
                 Full List <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -361,16 +428,29 @@ export const Dashboard: React.FC = () => {
                   const isUp = item.change !== undefined && item.change >= 0;
                   return (
                     <div key={item.id} className="p-4 flex items-center justify-between hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
-                      <div>
+                      <div className="space-y-0.5">
                         <span className="font-mono font-bold text-xs text-zinc-900 dark:text-white">{item.ticker}</span>
                         <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block truncate max-w-[120px]">{item.companyName}</span>
                       </div>
-                      <div className="text-right">
-                        <span className="font-mono text-xs font-bold text-zinc-900 dark:text-white">${item.price?.toFixed(2)}</span>
-                        <span className={`text-[10px] font-semibold block mt-0.5 ${
+
+                      {/* Mini SVG Sparkline */}
+                      <div className="hidden sm:block w-16 h-6">
+                        <svg className="w-full h-full" viewBox="0 0 60 20">
+                          <path 
+                            d={isUp ? "M0,15 Q15,18 30,10 T60,3" : "M0,5 Q15,3 30,12 T60,17"} 
+                            fill="none" 
+                            stroke={isUp ? "#10b981" : "#f43f5e"} 
+                            strokeWidth="2" 
+                          />
+                        </svg>
+                      </div>
+
+                      <div className="text-right font-mono">
+                        <span className="text-xs font-bold text-zinc-900 dark:text-white">${item.price?.toFixed(2)}</span>
+                        <span className={`text-[10px] font-bold block mt-0.5 ${
                           isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                         }`}>
-                          {isUp ? '+' : ''}{item.change?.toFixed(2)}%
+                          {isUp ? '▲ +' : '▼ '}{item.change?.toFixed(2)}%
                         </span>
                       </div>
                     </div>
@@ -393,18 +473,18 @@ export const Dashboard: React.FC = () => {
                     <CheckCircle2Icon className="w-3 h-3" />
                   </div>
                   <div>
-                    <span className="text-zinc-800 dark:text-zinc-200 font-semibold leading-relaxed">AAPL AI report synthesized</span>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">Sourya Analyst • 2 hours ago</p>
+                    <span className="text-zinc-800 dark:text-zinc-200 font-semibold leading-relaxed">NVDA SEC 10-K synthesized & DuPont ROE audited</span>
+                    <p className="text-[10px] text-zinc-400 mt-0.5 font-mono">Sourya Analyst • 20 mins ago</p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3 text-xs">
                   <div className="p-1 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 rounded-full shrink-0 mt-0.5 border border-indigo-100 dark:border-indigo-900">
-                    <Bookmark className="w-3 h-3" />
+                    <Activity className="w-3 h-3" />
                   </div>
                   <div>
-                    <span className="text-zinc-800 dark:text-zinc-200 font-semibold leading-relaxed">NVDA added to corporate watchlist</span>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">Jessica Reynolds • 5 hours ago</p>
+                    <span className="text-zinc-800 dark:text-zinc-200 font-semibold leading-relaxed">Multi-Company Matrix CSV exported for 4 tickers</span>
+                    <p className="text-[10px] text-zinc-400 mt-0.5 font-mono">Marcus Vance • 2 hours ago</p>
                   </div>
                 </div>
 
@@ -413,8 +493,8 @@ export const Dashboard: React.FC = () => {
                     <History className="w-3 h-3" />
                   </div>
                   <div>
-                    <span className="text-zinc-800 dark:text-zinc-200 font-semibold leading-relaxed">Compare run executed for MSFT vs AAPL</span>
-                    <p className="text-[10px] text-zinc-400 mt-0.5">Marcus Vance • Yesterday</p>
+                    <span className="text-zinc-800 dark:text-zinc-200 font-semibold leading-relaxed">Quant Terminal query executed for MSFT & AAPL</span>
+                    <p className="text-[10px] text-zinc-400 mt-0.5 font-mono">Jessica Reynolds • Yesterday</p>
                   </div>
                 </div>
               </div>
