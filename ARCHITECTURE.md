@@ -105,6 +105,42 @@ TerminalDrawer Component (React 18 + Tailwind)
   │     └── `theme`      → switches color palettes (matrix, amber, cyan, slate)
 ```
 
+### 2.3 Financial Risk & Red Flag Auditor Pipeline
+
+```
+1.  SEC Fact Extraction → Ingests usGaap:NetIncomeLoss, usGaap:Assets, usGaap:Liabilities, usGaap:StockholdersEquity.
+2.  Accrual Quality Audit → Checks Net Income vs. Total Asset velocity to detect aggressive revenue recognition.
+3.  Balance Sheet Leverage Stress-Test → Audits Liabilities / Equity ratio against investment-grade leverage thresholds.
+4.  Margin Contraction & Pricing Power → Checks YoY revenue growth and net profit margins against inflation shocks.
+5.  Composite Health Score → Synthesizes a 0-100 gauge (Strong >= 75, Moderate 50-74, High Risk < 50).
+```
+
+### 2.4 DuPont 3-Step ROE Decomposition
+
+$$\text{ROE} = \left( \frac{\text{Net Income}}{\text{Revenue}} \right) \times \left( \frac{\text{Revenue}}{\text{Assets}} \right) \times \left( \frac{\text{Assets}}{\text{Equity}} \right)$$
+
+* **Net Profit Margin**: Operating profitability & cost discipline.
+* **Asset Turnover**: Asset efficiency & capital velocity.
+* **Financial Leverage / Equity Multiplier**: Balance sheet solvency headroom.
+
+### 2.5 Agentic Copilot & Floating Controller Architecture
+
+```
+User Query / Ticker (Floating Bot Ctrl + Shift + C or Quant Terminal Ctrl + ~)
+  │
+  ▼
+API Gateway: POST /api/v1/research/ask-controller { ticker, question }
+  │
+  ├── 1. Dynamic SEC CIK Resolution (In-Memory Pre-Cache + data.sec.gov fallback)
+  ├── 2. Live XBRL Company Facts Ingestion (data.sec.gov/api/xbrl/companyfacts/CIK...)
+  ├── 3. GAAP Concept Normalization (Revenue, Net Income, Liabilities, Assets, Equity)
+  ├── 4. DuPont & Health Score Computation
+  └── 5. Grounded Gemini 3.6 Flash Synthesis (System Prompt with strict no-hallucination instruction)
+  │
+  ▼
+Response JSON: { answer, relatedMetrics: { Revenue, NetIncome, ROE, HealthScore }, citations }
+```
+
 ---
 
 ## 3. Directory Tree
@@ -131,9 +167,9 @@ klypup/
 │   │   │       ├── auth/           #   Register, login, JWT issuance
 │   │   │       ├── organizations/  #   Org management, member invitations
 │   │   │       ├── users/          #   User profile & preferences
-│   │   │       ├── research/       #   AI research lifecycle & SEC/Gemini engine
+│   │   │       ├── research/       #   AI research engine, SEC facts & Controller copilot
 │   │   │       ├── watchlist/      #   Company watchlist + live price merge
-│   │   │       ├── compare/        #   Multi-company AI financial matrix
+│   │   │       ├── compare/        #   Multi-company AI financial matrix & CSV export
 │   │   │       ├── citations/      #   Report citations & SEC filing sources
 │   │   │       ├── search/         #   Global ticker autocomplete & search
 │   │   │       └── webhooks/       #   Finnhub webhook ingestion & verification
@@ -142,15 +178,26 @@ klypup/
 │   │   └── tsconfig.json
 │   │
 │   └── web/                        # React 18 + Vite Frontend SPA
+│       ├── public/
+│       │   └── cloud.jpg           # Atmospheric hero background canvas
 │       ├── src/
 │       │   ├── app/                # Root providers: Router, QueryClient, ThemeContext
-│       │   ├── pages/              # Route view shells (Dashboard, Research, Compare, Watchlist...)
+│       │   ├── pages/              # Route view shells:
+│       │   │   ├── Landing.tsx     #   Onyx-inspired cloud showcase & 3s auto-rotating mockup
+│       │   │   ├── Dashboard.tsx   #   Organization workspace, recent reports & stats
+│       │   │   ├── ResearchResults #   SEC citations, DuPont cards & Red Flag Auditor
+│       │   │   ├── Compare.tsx     #   Multi-equity benchmarking matrix & CSV export
+│       │   │   ├── Reports.tsx     #   Attributed research reports library
+│       │   │   ├── Watchlist.tsx   #   Real-time WebSocket price tracking
+│       │   │   └── Team.tsx        #   Multi-tenant member & invite management
 │       │   ├── components/         # Design-system UI components:
 │       │   │   ├── Layout.tsx      #   Navigation sidebar, topbar, tenant context
-│       │   │   ├── TerminalDrawer  #   In-app Bloomberg-style Quant Terminal
+│       │   │   ├── AuthModal.tsx   #   Access Dashboard dialog with Fast Track Demo
+│       │   │   ├── FloatingControllerBot.tsx # Persistent AI Financial Controller copilot
+│       │   │   ├── TerminalDrawer.tsx # In-app Bloomberg-style Quant Terminal (Ctrl + ~)
 │       │   │   └── UI.tsx          #   Button, Card, Modal, MetricCard primitives
 │       │   ├── features/           # Domain feature modules (auth, research, watchlist, compare...)
-│       │   ├── lib/                # Axios instance, QueryClient setup
+│       │   ├── lib/                # Axios instance (60s timeout), QueryClient setup
 │       │   ├── services/           # Typed API service wrappers
 │       │   └── types/              # Frontend TypeScript interfaces
 │       ├── Dockerfile

@@ -8,8 +8,10 @@
 
 | Feature | Description |
 |---|---|
+| **☁️ Cloud-Aesthetic Landing Showcase** | High-performance Onyx-inspired landing interface with atmospheric cloud canvas (`/cloud.jpg`), 3-second auto-rotating live mockup preview (`Valuation & Trade`, `Markets`, `Portfolio`, `Activity`), and self-contained **Auth Modal Card** with 1-click **Fast Track Developer Demo**. |
 | **🤖 Floating Agentic AI Controller Bot** | Persistent, floating AI copilot widget (`Ctrl + Shift + C`) accessible across the entire application. Executes live multi-step SEC 10-K audits, DuPont 3-step ROE decompositions, and balance sheet stress tests with step-by-step agentic progress checkpoints. |
 | **🚨 Financial Risk & Red Flag Auditor** | Automated GAAP accounting audit flagging accrual anomalies, debt-to-equity leverage stress, margin contraction risks, and calculating a composite **Controller Health Score (0-100)**. |
+| **💬 "Ask the Controller" Copilot** | Agentic conversational copilot grounded in SEC 10-K filings. Answers corporate accounting queries, performs DuPont 3-step ROE breakdowns, and analyzes balance sheet liabilities without hallucinations. |
 | **AI Research Engine** | Deep corporate financial analysis via **Google Gemini (`gemini-3.6-flash`)**. Generates structured reports with verified citations from official SEC EDGAR 10-K/10-Q filings and live market data. |
 | **Quant Web Terminal** | In-app, keyboard-first Bloomberg-style terminal drawer (`Ctrl + ~`) with custom color themes, live trade polling, autocompletion, and direct report dispatching. |
 | **Standalone Shell CLI** | Native Node.js CLI (`npm run cli`) for querying quotes, inspecting SEC filings, comparing tickers, and running interactive REPL sessions directly in the terminal. |
