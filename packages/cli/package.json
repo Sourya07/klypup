@@ -1,0 +1,30 @@
+{
+  "name": "klypup",
+  "version": "1.1.0",
+  "description": "Autonomous AI Financial Controller & SEC Grounded Quant Terminal CLI",
+  "type": "module",
+  "bin": {
+    "klypup": "bin/klypup"
+  },
+  "main": "bin/klypup.js",
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "keywords": [
+    "finance",
+    "terminal",
+    "sec-edgar",
+    "bloomberg",
+    "dupont-roe",
+    "controller",
+    "quant",
+    "cli"
+  ],
+  "author": "Sourya",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sourya07/klypup.git"
+  }
+}

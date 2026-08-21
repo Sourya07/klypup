@@ -181,25 +181,27 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6">
       
       {/* 1. VISUAL AI CONTROLLER HERO BANNER */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-indigo-950/80 border border-zinc-800 p-6 sm:p-7 text-white shadow-xl">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-indigo-950/90 border border-zinc-800/80 p-6 sm:p-7 text-white shadow-2xl">
         {/* Ambient glow */}
-        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-12 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-96 h-96 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 -mb-12 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="space-y-2.5 max-w-2xl">
+          
+          {/* Left Text & Controls */}
+          <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-mono text-zinc-300 backdrop-blur-md">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="font-bold text-white">Autonomous Financial Controller Active</span>
               <span className="text-zinc-500">|</span>
-              <span className="text-indigo-300">SEC EDGAR 10-K & XBRL Grounded</span>
+              <span className="text-indigo-300 font-semibold">SEC EDGAR 10-K & XBRL Grounded</span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Welcome back, <span className="text-indigo-300">{user?.name}</span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-indigo-200 to-white">{user?.name}</span>
             </h2>
             <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed font-normal">
-              Execute DuPont 3-Step ROE breakdowns, stress-test accrual quality, benchmark multi-company financial multiples, or query the live Bloomberg Quant Terminal.
+              Execute DuPont 3-Step ROE breakdowns, stress-test accrual quality against operating cash flow, benchmark multi-company financial multiples, or query the live Bloomberg Quant Terminal.
             </p>
 
             {/* Shortcut Badges */}
@@ -209,10 +211,10 @@ export const Dashboard: React.FC = () => {
                   const botBtn = document.querySelector('[title*="Copilot"]') as HTMLElement;
                   if (botBtn) botBtn.click();
                 }}
-                className="px-2.5 py-1 rounded-md bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 text-indigo-300 text-[11px] font-bold transition-all flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-indigo-300 text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-sm hover:scale-105"
               >
-                <Zap className="w-3 h-3 text-indigo-400" />
-                <span>AI Copilot: <kbd className="px-1 py-0.5 bg-zinc-900 rounded text-[10px]">Ctrl + Shift + C</kbd></span>
+                <Zap className="w-3.5 h-3.5 text-indigo-400" />
+                <span>AI Copilot: <kbd className="px-1.5 py-0.5 bg-zinc-900/90 border border-zinc-700 rounded text-[10px] text-zinc-200">Ctrl + Shift + C</kbd></span>
               </button>
 
               <button
@@ -220,31 +222,50 @@ export const Dashboard: React.FC = () => {
                   const termBtn = document.querySelector('[title*="Terminal"]') as HTMLElement;
                   if (termBtn) termBtn.click();
                 }}
-                className="px-2.5 py-1 rounded-md bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/80 text-emerald-300 text-[11px] font-bold transition-all flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-zinc-800/90 hover:bg-zinc-700 border border-zinc-700/80 text-emerald-300 text-[11px] font-bold transition-all flex items-center gap-1.5 shadow-sm hover:scale-105"
               >
-                <Terminal className="w-3 h-3 text-emerald-400" />
-                <span>Quant Terminal: <kbd className="px-1 py-0.5 bg-zinc-900 rounded text-[10px]">Ctrl + ~</kbd></span>
+                <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Quant Terminal: <kbd className="px-1.5 py-0.5 bg-zinc-900/90 border border-zinc-700 rounded text-[10px] text-zinc-200">Ctrl + ~</kbd></span>
               </button>
             </div>
           </div>
 
-          {/* Right Action Stack */}
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0">
-            <Button 
-              variant="primary" 
-              onClick={() => navigate('/research/new')} 
-              className="bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 text-white font-bold text-xs flex items-center justify-center px-4 py-2.5 rounded-xl transition-all"
-            >
-              <Sparkles className="w-4 h-4 mr-2 text-indigo-200" /> Start SEC Research Run
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/compare')} 
-              className="border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center px-4 py-2.5 rounded-xl transition-all"
-            >
-              <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-400" /> Compare Companies
-            </Button>
+          {/* Right Visual Image & Action Stack */}
+          <div className="flex flex-col sm:flex-row lg:flex-col items-center lg:items-end gap-3.5 shrink-0">
+            {/* 3D Visual Artwork */}
+            <div className="relative group overflow-hidden rounded-xl border border-indigo-500/30 bg-zinc-950/60 shadow-2xl p-1 max-w-[240px] sm:max-w-[260px] backdrop-blur-sm">
+              <img 
+                src="/assets/financial-controller-banner.jpg" 
+                alt="AI Financial Controller Holographic Telemetry" 
+                className="w-full h-auto rounded-lg object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute bottom-2 left-2 right-2 bg-zinc-950/80 backdrop-blur-md px-2 py-1 rounded border border-white/10 flex items-center justify-between text-[9px] font-mono text-zinc-300">
+                <span className="flex items-center gap-1 text-emerald-400 font-bold">
+                  <ShieldCheck className="w-2.5 h-2.5" /> SEC Audited
+                </span>
+                <span className="text-indigo-300 font-semibold">DuPont ROE</span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-row lg:flex-col gap-2 w-full max-w-[260px]">
+              <Button 
+                variant="primary" 
+                onClick={() => navigate('/research/new')} 
+                className="w-full bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 text-white font-bold text-xs flex items-center justify-center px-4 py-2.5 rounded-xl transition-all"
+              >
+                <Sparkles className="w-4 h-4 mr-2 text-indigo-200" /> Start SEC Research
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/compare')} 
+                className="w-full border-white/20 bg-white/5 hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center px-4 py-2.5 rounded-xl transition-all"
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-400" /> Compare Companies
+              </Button>
+            </div>
           </div>
+
         </div>
       </div>
 

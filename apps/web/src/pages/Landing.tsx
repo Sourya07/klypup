@@ -10,7 +10,9 @@ import {
   Github, 
   Zap, 
   TrendingUp, 
-  FileSpreadsheet
+  FileSpreadsheet,
+  Copy,
+  Check
 } from 'lucide-react';
 import { AuthModal } from '../components/AuthModal';
 import { TerminalDrawer } from '../components/TerminalDrawer';
@@ -39,6 +41,7 @@ export const Landing: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
   const [terminalOpen, setTerminalOpen] = useState(false);
+  const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
 
   // Global shortcut: Ctrl + ~ or Cmd + ~ to toggle terminal drawer on landing page
   useEffect(() => {
@@ -170,6 +173,50 @@ export const Landing: React.FC = () => {
               <Terminal className="w-4 h-4 text-emerald-400" />
               <span>Open Quant Terminal (`Ctrl + ~`)</span>
             </button>
+          </div>
+
+          {/* Interactive NPX & NPM Terminal Bar */}
+          <div className="pt-4 max-w-xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2.5 pl-4 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/15 shadow-2xl">
+              <div className="flex items-center gap-2 text-xs font-mono text-zinc-300 overflow-x-auto w-full sm:w-auto">
+                <span className="text-emerald-400 font-bold">$</span>
+                <span className="text-white font-semibold">npx klypup quote NVDA</span>
+                <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold border border-indigo-500/30">
+                  npm v1.1.0
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText('npx klypup quote NVDA');
+                    setCopiedCmd('npx');
+                    setTimeout(() => setCopiedCmd(null), 2000);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold transition-all flex items-center gap-1.5 border border-white/10"
+                  title="Copy npx command"
+                >
+                  {copiedCmd === 'npx' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-zinc-400" />}
+                  <span>{copiedCmd === 'npx' ? 'Copied!' : 'Copy'}</span>
+                </button>
+
+                <a
+                  href="https://www.npmjs.com/package/klypup"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-500 text-white text-xs font-bold transition-all flex items-center gap-1 shadow-md shadow-indigo-600/30"
+                >
+                  <span>npm package</span>
+                  <ArrowRight className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] font-mono text-zinc-400 mt-2">
+              <span>Install globally: <code className="text-emerald-300 font-bold bg-white/5 px-1 rounded">npm i -g klypup</code></span>
+              <span className="hidden sm:inline text-zinc-600">•</span>
+              <span>Interactive shell: <code className="text-indigo-300 font-bold bg-white/5 px-1 rounded">npx klypup interactive</code></span>
+            </div>
           </div>
 
           {/* Sub Tab Switcher Pills matching our Project's Real Modules */}

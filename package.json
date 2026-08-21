@@ -16,7 +16,8 @@
     "db:migrate": "npm run db:migrate --workspace=apps/api",
     "db:seed": "npm run db:seed --workspace=apps/api",
     "db:setup": "bash scripts/setup-db.sh",
-    "cli": "node scripts/klypup-cli.mjs"
+    "cli": "node packages/cli/bin/klypup.mjs",
+    "klypup": "node packages/cli/bin/klypup.mjs"
   },
   "keywords": [
     "monorepo",
