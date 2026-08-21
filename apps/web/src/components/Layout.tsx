@@ -20,6 +20,7 @@ import {
   Terminal as TerminalIcon
 } from 'lucide-react';
 import { TerminalDrawer } from './TerminalDrawer';
+import { FloatingControllerBot } from './FloatingControllerBot';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, organization, role, logout } = useAuth();
@@ -79,7 +80,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   }, [searchQuery]);
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: BarChart4 },
+    { name: 'Dashboard', href: '/dashboard', icon: BarChart4 },
     { name: 'New Research', href: '/research/new', icon: Globe },
     { name: 'Reports', href: '/reports', icon: FileText },
     { name: 'Compare Companies', href: '/compare', icon: TrendingUp },
@@ -114,7 +115,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const breadcrumbs = generateBreadcrumbs();
@@ -427,6 +428,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         isOpen={terminalOpen} 
         onClose={() => setTerminalOpen(false)} 
       />
+
+      {/* FLOATING AGENTIC CONTROLLER BOT */}
+      <FloatingControllerBot />
 
     </div>
   );

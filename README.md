@@ -1,6 +1,6 @@
-# Klypup — AI Investment Research Platform
+# Klypup — AI Investment Research & Finance Controller Platform
 
-> **Multi-tenant SaaS platform** for AI-powered equity research. Analysts can generate deep-dive reports, track watchlists with live price feeds, compare companies side-by-side, and collaborate securely within org-scoped workspaces — all backed by real-time WebSocket updates and a Gemini-powered AI research engine.
+> **Multi-tenant AI Financial Intelligence SaaS** for automated equity research and financial controller operations. Analysts and financial controllers can generate deep-dive SEC-grounded reports, execute live quantitative analysis via an in-app **Bloomberg-style Quant Terminal**, track watchlists with real-time price feeds, benchmark companies side-by-side, and collaborate securely within org-scoped workspaces.
 
 ---
 
@@ -8,12 +8,16 @@
 
 | Feature | Description |
 |---|---|
-| **AI Research Engine** | Run deep equity research via Google Gemini AI. Generates structured financial reports with citations from SEC filings and market data. |
-| **Live Watchlist** | Track companies with real-time price ticks via a direct Finnhub WebSocket connection, cached in-memory (15-min TTL), with a Finnhub REST fallback. |
-| **Company Comparisons** | Side-by-side AI-generated comparisons across financial metrics for any set of companies. |
-| **Real-Time Updates** | WebSocket server broadcasts `STOCK_UPDATE` events to all connected browser clients instantly. |
-| **Multi-Tenancy (RBAC)** | Workspace-level data isolation via `organizationId`. Roles: `ADMIN`, `ANALYST`, `VIEWER`. |
-| **Citations & Sources** | Every research report links to verifiable SEC filings, market data sources, and financial fact JSON payloads. |
+| **🤖 Floating Agentic AI Controller Bot** | Persistent, floating AI copilot widget (`Ctrl + Shift + C`) accessible across the entire application. Executes live multi-step SEC 10-K audits, DuPont 3-step ROE decompositions, and balance sheet stress tests with step-by-step agentic progress checkpoints. |
+| **🚨 Financial Risk & Red Flag Auditor** | Automated GAAP accounting audit flagging accrual anomalies, debt-to-equity leverage stress, margin contraction risks, and calculating a composite **Controller Health Score (0-100)**. |
+| **AI Research Engine** | Deep corporate financial analysis via **Google Gemini (`gemini-3.6-flash`)**. Generates structured reports with verified citations from official SEC EDGAR 10-K/10-Q filings and live market data. |
+| **Quant Web Terminal** | In-app, keyboard-first Bloomberg-style terminal drawer (`Ctrl + ~`) with custom color themes, live trade polling, autocompletion, and direct report dispatching. |
+| **Standalone Shell CLI** | Native Node.js CLI (`npm run cli`) for querying quotes, inspecting SEC filings, comparing tickers, and running interactive REPL sessions directly in the terminal. |
+| **Live Watchlist** | Real-time price tracking via Finnhub WebSocket connection, buffered in-memory (15-min TTL) with REST fallback. |
+| **Company Comparisons & CSV Export** | Multi-company financial matrices benchmarking P/E multiples, Diluted EPS, YoY Revenue Growth, Profit Margin, and Debt/Equity leverage with 1-click CSV spreadsheet export. |
+| **Real-Time WebSocket Updates** | Co-hosted WebSocket server broadcasts `STOCK_UPDATE` events to all connected browser clients instantly. |
+| **Multi-Tenancy & RBAC** | Organization-level data isolation via `organizationId`. Roles: `ADMIN`, `ANALYST`, `VIEWER`. |
+| **Audited SEC Citations** | Eliminates AI hallucinations by grounding all balance sheet and financial claims with direct links to SEC EDGAR filing payloads. |
 
 ---
 
@@ -27,47 +31,64 @@
 | Database | Neon Serverless PostgreSQL |
 | Auth | JWT (RS256) |
 | Real-time | `ws` WebSocket Server & Finnhub WS Client |
-| AI | Google Gemini API |
-| Financial Data | Finnhub WebSocket/REST · Yahoo Finance API · SEC EDGAR (data.sec.gov) |
+| AI | Google Gemini API (`gemini-3.6-flash`) |
+| Financial Data | Finnhub WebSocket/REST · Yahoo Finance API · SEC EDGAR (`data.sec.gov`) |
 
 ### Frontend (`apps/web`)
 | Layer | Technology |
 |---|---|
 | Framework | React 18 · TypeScript · Vite |
-| Styling | Tailwind CSS |
+| Styling | Tailwind CSS (Dark/Light Modes + Quant Monospace Themes) |
+| Quant Terminal | `TerminalDrawer` (Custom REPL, Themes, History & Tab Autocomplete) |
 | Data Fetching | TanStack Query (React Query) |
 | HTTP Client | Axios |
 | Global State | Zustand |
-| Real-time | WebSocketContext (native browser WS) |
+| Real-time | WebSocketContext (Native Browser WS) |
 
-### Shared / Infrastructure
+### Shared / CLI / Infrastructure
 | Layer | Technology |
 |---|---|
 | Shared Package | `packages/shared` — Zod schemas + TS types (client & server) |
+| CLI Tool | `scripts/klypup-cli.mjs` — Native Node.js Readline + ANSI Box-Drawing |
 | Containers | Docker · Docker Compose |
 | CI/CD | GitHub Actions |
 
 ---
 
-## Workspace Structure
+## Quant Terminal & CLI Interfaces
 
-```
-klypup/
-├── .github/                    # CI/CD GitHub Actions workflows
-├── apps/
-│   ├── api/                    # Express REST API + WebSocket server
-│   └── web/                    # React + Vite frontend SPA
-├── packages/
-│   └── shared/                 # Shared Zod schemas & TypeScript types
-├── docs/                       # Architecture diagrams & specs
-├── scripts/                    # DB setup & migration helpers
-├── docker-compose.yml          # Local service containers
-├── image.png                   # System architecture & API flow diagram
-└── package.json                # Root monorepo configuration
-```
+Klypup provides two dedicated terminal interfaces for fast, keyboard-first workflows:
 
-→ Full directory tree with per-file descriptions: [ARCHITECTURE.md](./ARCHITECTURE.md)
-→ Key technical decisions & tradeoffs: [DECISIONS.md](./DECISIONS.md)
+### 1. In-App Bloomberg-Style Web Terminal
+* **Open Terminal**: Press **`Ctrl + ` `** (or **`Cmd + ` `**) anywhere in the web app, or click the **`[>_ Quant Terminal]`** launcher.
+* **Available Commands**:
+  * `quote <TICKER>` — Live market snapshot & equity card (e.g. `quote NVDA`)
+  * `research <TICKER> [focus prompt]` — Trigger Gemini AI research and stream the complete financial report directly into the terminal window
+  * `compare <T1> <T2> [T3...]` — Render side-by-side comparative financial matrix
+  * `sec <TICKER>` — Inspect SEC EDGAR 10-K/10-Q filing registry & CIK mapping
+  * `watchlist [list|add|rm] <TICKER>` — Inspect or modify the organization's real-time watchlist
+  * `theme [matrix|amber|cyan|slate]` — Switch terminal color theme
+  * `clear` / `help` / `exit`
+
+### 2. Standalone Shell CLI
+Run quantitative commands directly from your local terminal shell without extra dependencies:
+
+```bash
+# View CLI manual
+npm run cli -- --help
+
+# Live quote snapshot
+npm run cli quote NVDA
+
+# Compare multiple companies in ASCII matrix
+npm run cli compare AAPL MSFT NVDA
+
+# Inspect verified SEC EDGAR filings
+npm run cli sec TSLA
+
+# Launch interactive terminal REPL shell
+npm run cli interactive
+```
 
 ---
 
@@ -76,53 +97,48 @@ klypup/
 ### Prerequisites
 
 - **Node.js** v18+
-- **Docker & Docker Compose** (for local Postgres / Redis)
-- **Neon PostgreSQL** project — or a local Postgres instance
+- **Neon PostgreSQL** database (or local Docker Postgres)
+- **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/app/apikey))
 
-### 1. Clone
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/Sourya07/klypup.git
 cd klypup
-```
-
-### 2. Install Dependencies
-
-```bash
 npm install
 ```
 
-### 3. Configure Environment
+### 2. Configure Environment
 
-Copy the example env and fill in your credentials:
+Copy the example environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Key variables to set:
+Fill in your configuration:
 
 | Variable | Description |
 |---|---|
-| `DATABASE_URL` | Neon (or local) PostgreSQL connection string |
-| `DIRECT_URL` | Direct connection URL (for Prisma migrations) |
-| `JWT_SECRET` | Min. 32-char random secret for JWT signing |
-| `GEMINI_API_KEY` | Google Gemini API key for research engine |
-| `FINNHUB_API_KEY` | Finnhub key for real-time price WebSocket stream and REST fallback |
-| `SEC_USER_AGENT` | Required `User-Agent` header for SEC EDGAR requests |
-| `VITE_API_URL` | Frontend → Backend base URL (default: `http://localhost:8000/api/v1`) |
+| `DATABASE_URL` | Neon Serverless PostgreSQL connection string |
+| `DIRECT_URL` | Direct connection URL for Prisma migrations |
+| `JWT_SECRET` | Min. 32-char secret for JWT signing |
+| `GEMINI_API_KEY` | Google Gemini API key (`gemini-3.6-flash`) |
+| `FINNHUB_API_KEY` | Finnhub API key for live trade WebSocket feeds |
+| `SEC_USER_AGENT` | Identifying `User-Agent` header for SEC EDGAR requests |
+| `VITE_API_URL` | Frontend → Backend API base URL (`http://localhost:8000/api/v1`) |
 
-### 4. Database Setup
+### 3. Database Setup
 
 ```bash
-npm run db:setup      # Runs Prisma migrations
-npm run db:seed       # Seeds initial data
+npm run db:setup      # Pushes schema to Neon PostgreSQL
+npm run db:seed       # Seeds default organization, users, and reports
 ```
 
-### 5. Run in Development
+### 4. Run in Development
 
 ```bash
-npm run dev           # Starts both API (port 8000) and Web (port 5173) concurrently
+npm run dev           # Starts both API (port 8000) and Web App (port 5173) concurrently
 ```
 
 | Service | URL |
@@ -133,99 +149,11 @@ npm run dev           # Starts both API (port 8000) and Web (port 5173) concurre
 
 ---
 
-## API Overview
+## Security & Multi-Tenancy
 
-All endpoints are prefixed with `/api/v1`.
-
-### Authentication
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/auth/register` | Register a new user + org |
-| `POST` | `/auth/login` | Login & receive JWT |
-| `GET` | `/auth/me` | Get current authenticated user |
-
-### Research
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/research/runs` | Trigger a new AI research run (async) |
-| `GET` | `/research/runs` | List research runs for the org |
-| `GET` | `/research/runs/:id` | Get a specific research report |
-
-### Watchlist
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/watchlist` | Fetch org watchlist with live price data |
-| `POST` | `/watchlist` | Add a company to the watchlist |
-| `DELETE` | `/watchlist/:id` | Remove a company from the watchlist |
-
----
-
-## Request Lifecycle (AI Research Run)
-
-```
-Browser                   Express API                  External Services
-  │                           │                               │
-  │── POST /research/runs ───►│                               │
-  │◄── { runId } ────────────│                               │
-  │                           │── Spawn background job ──────►│
-  │                           │◄─ Yahoo Finance: prices ──────│
-  │                           │◄─ SEC EDGAR: filings  ────────│
-  │                           │◄─ Gemini AI: report JSON ─────│
-  │                           │── Save to Neon DB ────────────│
-  │◄── WS: STOCK_UPDATE ─────│                               │
-  │── GET /research/runs/:id ►│                               │
-  │◄── Full Report JSON ─────│                               │
-```
-
-See the full architecture diagram for all data flows: [`image.png`](./image.png)
-
----
-
-## Architecture
-
-### Layered Backend (N-Tier)
-
-Each module under `apps/api/src/modules/` follows a strict layer separation:
-
-```
-Request → Routes → Controller → Service → Repository → Prisma → Neon DB
-                ↑                   ↑
-             Schema (Zod)      External APIs / Jobs
-```
-
-### Modular Frontend (Feature-Based)
-
-```
-src/pages/         ← thin route wrappers only
-src/features/      ← all business logic, hooks, queries per domain
-src/components/    ← pure, reusable UI (Button, Card, Modal)
-src/store/         ← Zustand global state slices
-```
-
----
-
-## CI/CD & Deployment (AWS EC2)
-
-The repository includes a ready-to-use GitHub Actions CD pipeline ([`cd.yml`](./.github/workflows/cd.yml)) configured for deployment to an AWS EC2 instance.
-
-**How it works:**
-1. **Builds & Pushes** Docker images to GitHub Container Registry (`ghcr.io`).
-2. **Copies** the `docker-compose.yml` securely to your EC2 instance via SCP.
-3. **Executes** SSH commands on the EC2 instance to pull the new images and run `docker-compose up -d`.
-
-To enable this, set the following secrets in your GitHub repository:
-- `EC2_HOST` — The public IP or DNS of your AWS EC2 instance.
-- `EC2_USERNAME` — Your SSH user (e.g., `ubuntu` or `ec2-user`).
-- `EC2_SSH_KEY` — Your private SSH `.pem` key.
-
----
-
-## Security
-
-- **JWT Authentication** on all protected routes
-- **Tenant Isolation** — every DB query scoped by `organizationId`
-- **RBAC Middleware** — role checks (`ADMIN` / `ANALYST` / `VIEWER`) enforced server-side
-- **Input Validation** — Zod schemas gate every incoming request at the controller boundary
+- **Logical Tenant Isolation**: Every database query is strictly scoped by `organizationId` from validated JWT claims.
+- **Role-Based Access Control (RBAC)**: Fine-grained permissions (`ADMIN`, `ANALYST`, `VIEWER`) enforced via Express middleware.
+- **Strict Anti-Hallucination Grounding**: Fact payloads are retrieved and verified against SEC EDGAR before triggering Gemini synthesis.
 
 ---
 

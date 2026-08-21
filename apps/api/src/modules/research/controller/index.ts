@@ -58,6 +58,27 @@ export async function deleteReport(req: Request, res: Response, next: NextFuncti
   }
 }
 
+export async function askController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { ticker, question, reportId } = req.body;
+    const resolvedReportId = reportId || req.params.id;
+    let resolvedTicker = ticker;
+    if (!resolvedTicker && resolvedReportId) {
+      const rep = await researchService.getReport(req.user!.orgId, resolvedReportId);
+      resolvedTicker = (rep.content as any)?.ticker || rep.title?.split(':')?.[1]?.trim() || '';
+    }
+    const result = await researchService.askFinancialController(
+      req.user!.orgId,
+      resolvedTicker,
+      question || 'Audit the company financial statements and balance sheet leverage.',
+      resolvedReportId
+    );
+    sendSuccess(res, result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 function formatRun(run: any) {
   return {
     id: run.id,

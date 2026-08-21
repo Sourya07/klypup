@@ -9,6 +9,7 @@ import { Layout } from '../components/Layout';
 // Importing page components
 import { Login } from '../pages/Login';
 import { Signup } from '../pages/Signup';
+import { Landing } from '../pages/Landing';
 import { Dashboard } from '../pages/Dashboard';
 import { NewResearch } from '../pages/NewResearch';
 import { ResearchResults } from '../pages/ResearchResults';
@@ -16,6 +17,20 @@ import { Reports } from '../pages/Reports';
 import { Compare } from '../pages/Compare';
 import { Watchlist } from '../pages/Watchlist';
 import { Team } from '../pages/Team';
+import { useAuth } from '../context/AuthContext';
+
+// Dynamic root component that serves Landing for public visitors and Dashboard for logged-in analysts
+const RootRoute: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Landing />;
+  }
+  return (
+    <Layout>
+      <Dashboard />
+    </Layout>
+  );
+};
 
 // Sleek 404 page component
 const NotFound: React.FC = () => (
@@ -44,13 +59,15 @@ export default function App() {
           <BrowserRouter>
           <Routes>
             
-            {/* Public Authentication Routes */}
+            {/* Public Landing & Authentication Routes */}
+            <Route path="/" element={<RootRoute />} />
+            <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
   
             {/* Protected Monorepo App Routes */}
             <Route 
-              path="/" 
+              path="/dashboard" 
               element={
                 <ProtectedRoute>
                   <Layout>

@@ -3,3 +3,5 @@ export * from './ProtectedRoute';
 export * from './RoleGuard';
 export * from './UI';
 export * from './TerminalDrawer';
+export * from './FloatingControllerBot';
+export * from './AuthModal';

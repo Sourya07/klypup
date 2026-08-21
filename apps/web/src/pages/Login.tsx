@@ -15,7 +15,7 @@ export const Login: React.FC = () => {
   const [error, setError] = useState('');
 
   // Destination to redirect to after successful login
-  const from = (location.state as any)?.from?.pathname || '/';
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

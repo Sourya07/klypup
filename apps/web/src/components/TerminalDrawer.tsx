@@ -30,6 +30,8 @@ const COMMAND_LIST = [
   'help',
   'quote',
   'research',
+  'ask',
+  'audit',
   'compare',
   'watchlist',
   'reports',
@@ -185,6 +187,14 @@ export const TerminalDrawer: React.FC<{
               <div>
                 <span className="text-emerald-400 font-bold">research &lt;TICKER&gt; [prompt]</span>
                 <p className="text-zinc-500 text-[11px]">Trigger Gemini AI equity research report</p>
+              </div>
+              <div>
+                <span className="text-emerald-400 font-bold">ask &lt;TICKER&gt; &lt;QUESTION&gt;</span>
+                <p className="text-zinc-500 text-[11px]">Ask AI Financial Controller (e.g. ask AAPL DuPont ROE breakdown)</p>
+              </div>
+              <div>
+                <span className="text-emerald-400 font-bold">audit &lt;TICKER&gt;</span>
+                <p className="text-zinc-500 text-[11px]">Run automated health & red flag audit (e.g. audit MSFT)</p>
               </div>
               <div>
                 <span className="text-emerald-400 font-bold">compare &lt;T1&gt; &lt;T2&gt; [T3...]</span>
@@ -583,6 +593,85 @@ export const TerminalDrawer: React.FC<{
                 <div className="text-emerald-400">✓ Form 10-Q (Quarterly Report) — Q3 Balance Sheet & Revenue</div>
                 <div className="text-zinc-500">Source: U.S. Securities and Exchange Commission (EDGAR API)</div>
               </div>
+            </div>
+          ),
+          cmd
+        );
+      }
+
+      // ASK AI FINANCIAL CONTROLLER COPILOT
+      else if (lowerAction === 'ask' || lowerAction === 'copilot') {
+        const ticker = (args[0] || '').toUpperCase();
+        const question = args.slice(1).join(' ');
+        if (!ticker || !question) {
+          pushOutput('error', <span className="font-mono">Usage: ask &lt;TICKER&gt; &lt;QUESTION&gt; (e.g. ask AAPL What is the DuPont ROE breakdown?)</span>, cmd);
+          setIsExecuting(false);
+          return;
+        }
+
+        pushOutput('info', <span className="font-mono text-xs text-indigo-400">Consulting AI Financial Controller for {ticker}...</span>, cmd);
+
+        const res = await researchService.askController(ticker, question);
+        pushOutput(
+          'success',
+          (
+            <div className="font-mono text-xs space-y-2 border-l-2 border-indigo-500 pl-3 my-1">
+              <div className="text-indigo-400 font-bold flex items-center justify-between">
+                <span>AI FINANCIAL CONTROLLER RESPONSE // {ticker}</span>
+                <span className="text-[10px] text-zinc-500">Confidence: {res.confidenceScore}%</span>
+              </div>
+              <div className="text-zinc-300 bg-zinc-900/70 p-3 rounded border border-zinc-800 leading-relaxed whitespace-pre-line text-[11px]">
+                {res.answer}
+              </div>
+              {res.relatedMetrics && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  {Object.entries(res.relatedMetrics).map(([k, v]) => (
+                    <div key={k} className="p-1.5 rounded bg-zinc-900/60 border border-zinc-800">
+                      <div className="text-[9px] uppercase text-zinc-500">{k}</div>
+                      <div className="font-bold text-white text-xs">{v}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ),
+          cmd
+        );
+      }
+
+      // AUDIT FINANCIAL HEALTH & RED FLAGS
+      else if (lowerAction === 'audit') {
+        const ticker = (args[0] || '').toUpperCase();
+        if (!ticker) {
+          pushOutput('error', <span className="font-mono">Usage: audit &lt;TICKER&gt; (e.g. audit NVDA)</span>, cmd);
+          setIsExecuting(false);
+          return;
+        }
+
+        pushOutput('info', <span className="font-mono text-xs text-amber-300">Auditing SEC 10-K balance sheet & accruals for {ticker}...</span>, cmd);
+
+        const res = await researchService.askController(ticker, 'Perform an automated financial controller audit on accrual quality, debt leverage, and margin stability.');
+        pushOutput(
+          'success',
+          (
+            <div className="font-mono text-xs space-y-2 border-l-2 border-amber-500 pl-3 my-1">
+              <div className="text-amber-400 font-bold flex items-center justify-between">
+                <span>FINANCIAL CONTROLLER AUDIT REPORT // {ticker}</span>
+                <span className="text-[10px] text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">SEC Grounded</span>
+              </div>
+              <div className="text-zinc-300 bg-zinc-900/80 p-3 rounded border border-zinc-800 leading-relaxed whitespace-pre-line text-[11px]">
+                {res.answer}
+              </div>
+              {res.relatedMetrics && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  {Object.entries(res.relatedMetrics).map(([k, v]) => (
+                    <div key={k} className="p-1.5 rounded bg-zinc-900/60 border border-zinc-800">
+                      <div className="text-[9px] uppercase text-zinc-500">{k}</div>
+                      <div className="font-bold text-emerald-400 text-xs">{v}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ),
           cmd

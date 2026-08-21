@@ -23,6 +23,22 @@ export interface Member extends SharedMember {
 
 export interface ResearchCitation extends SharedCitation {}
 
+export interface RedFlagItem {
+  category: 'ACCRUAL' | 'LEVERAGE' | 'MARGIN' | 'VALUATION' | 'REGULATORY';
+  severity: 'LOW' | 'MEDIUM' | 'HIGH';
+  title: string;
+  detail: string;
+  metricValue: string;
+  recommendation: string;
+}
+
+export interface DuPontAnalysis {
+  roe: string;
+  netMargin: string;
+  assetTurnover: string;
+  financialLeverage: string;
+}
+
 export interface ResearchReport extends SharedReport {
   ticker: string;
   companyName: string;
@@ -35,6 +51,10 @@ export interface ResearchReport extends SharedReport {
     profitMargin?: string;
     debtEquity?: string;
   };
+  healthScore?: number;
+  healthRating?: 'STRONG' | 'MODERATE' | 'HIGH_RISK';
+  redFlags?: RedFlagItem[];
+  duPontAnalysis?: DuPontAnalysis;
   keyDrivers?: string[];
   risks?: string[];
   opportunities?: string[];
@@ -42,6 +62,13 @@ export interface ResearchReport extends SharedReport {
   sentimentScore?: number;
   stockHistory?: Array<{ date: string; price: number; volume?: number }>;
   tags?: string[];
+}
+
+export interface AskControllerResponse {
+  answer: string;
+  confidenceScore: number;
+  relatedMetrics?: Record<string, string>;
+  citations?: Array<{ sourceName: string; snippet: string }>;
 }
 
 export interface ResearchRun {

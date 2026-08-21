@@ -4,7 +4,8 @@ import {
   ResearchReport, 
   ResearchRun, 
   WatchlistItem, 
-  CompareResponse 
+  CompareResponse,
+  AskControllerResponse
 } from '../types/api';
 
 export const orgService = {
@@ -65,6 +66,18 @@ export const researchService = {
       return response.data.data;
     }
     throw new Error('Research run not found');
+  },
+
+  askController: async (ticker: string, question: string, reportId?: string): Promise<AskControllerResponse> => {
+    const response = await apiClient.post('/research/ask', { 
+      ticker: ticker.toUpperCase(), 
+      question, 
+      reportId 
+    });
+    if (response.data?.success && response.data?.data) {
+      return response.data.data;
+    }
+    throw new Error(response.data?.error || 'Failed to get answer from AI Controller');
   }
 };
 

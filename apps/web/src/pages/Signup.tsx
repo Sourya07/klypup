@@ -63,7 +63,7 @@ export const Signup: React.FC = () => {
         password, 
         organizationName: hasInvite ? 'Invited Member' : organizationName 
       });
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err: any) {
       setError(err.message || 'Failed to create organization. Please try again.');
     } finally {

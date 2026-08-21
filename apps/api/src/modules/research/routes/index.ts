@@ -18,4 +18,8 @@ router.get('/reports/:id', controller.getReport);
 router.patch('/reports/:id', validate(updateReportSchema), controller.updateReport);
 router.delete('/reports/:id', requireRole('ADMIN'), controller.deleteReport);
 
+// AI Financial Controller Copilot Query
+router.post('/ask', controller.askController);
+router.post('/reports/:id/ask', controller.askController);
+
 export default router;
