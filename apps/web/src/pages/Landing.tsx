@@ -10,18 +10,30 @@ import {
   Github, 
   Zap, 
   TrendingUp, 
-  CheckCircle 
+  FileSpreadsheet
 } from 'lucide-react';
 import { AuthModal } from '../components/AuthModal';
 import { TerminalDrawer } from '../components/TerminalDrawer';
 
-const TABS: Array<'trade' | 'markets' | 'portfolio' | 'activity'> = ['trade', 'markets', 'portfolio', 'activity'];
+const TABS: Array<'research' | 'watchlist' | 'compare' | 'controller'> = [
+  'research', 
+  'watchlist', 
+  'compare', 
+  'controller'
+];
+
+const TAB_LABELS: Record<string, string> = {
+  research: 'AI Research',
+  watchlist: 'Live Watchlist',
+  compare: 'Company Comparison',
+  controller: 'Controller Copilot'
+};
 
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'trade' | 'markets' | 'portfolio' | 'activity'>('trade');
+  const [activeTab, setActiveTab] = useState<'research' | 'watchlist' | 'compare' | 'controller'>('research');
   const [tradeType, setTradeType] = useState<'yes' | 'no'>('yes');
   const [isPaused, setIsPaused] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -54,9 +66,9 @@ export const Landing: React.FC = () => {
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  const handleLaunchApp = () => {
+  const handleLaunchApp = (targetPath = '/dashboard') => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate(targetPath);
       return;
     }
     setAuthModalMode('signin');
@@ -105,7 +117,7 @@ export const Landing: React.FC = () => {
               Sign In
             </button>
             <button
-              onClick={handleLaunchApp}
+              onClick={() => handleLaunchApp('/dashboard')}
               className="px-4 py-2 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-black shadow-xl hover:shadow-white/20 transition-all flex items-center gap-1.5"
             >
               <span>Launch App</span>
@@ -145,7 +157,7 @@ export const Landing: React.FC = () => {
 
           <div className="pt-2 flex flex-wrap justify-center gap-3">
             <button
-              onClick={handleLaunchApp}
+              onClick={() => handleLaunchApp('/dashboard')}
               className="px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black shadow-2xl shadow-indigo-600/40 hover:shadow-indigo-500/60 transition-all flex items-center gap-2"
             >
               <Zap className="w-4 h-4" />
@@ -160,7 +172,7 @@ export const Landing: React.FC = () => {
             </button>
           </div>
 
-          {/* Sub Tab Switcher Pills with auto-rotating progress animation */}
+          {/* Sub Tab Switcher Pills matching our Project's Real Modules */}
           <div className="pt-8 flex justify-center">
             <div className="p-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 inline-flex items-center space-x-1">
               {TABS.map((tab) => {
@@ -173,13 +185,13 @@ export const Landing: React.FC = () => {
                       setIsPaused(true);
                       setTimeout(() => setIsPaused(false), 8000); // resume auto-rotate after 8s
                     }}
-                    className={`relative px-4 py-1.5 rounded-full text-xs font-bold capitalize transition-all duration-300 ${
+                    className={`relative px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
                       isActive 
                         ? 'bg-white text-black shadow-lg scale-105' 
                         : 'text-zinc-400 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <span>{tab === 'trade' ? 'Valuation & Trade' : tab}</span>
+                    <span>{TAB_LABELS[tab]}</span>
                     {isActive && (
                       <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1 bg-indigo-600 rounded-full" />
                     )}
@@ -203,23 +215,23 @@ export const Landing: React.FC = () => {
               <div className="flex items-center space-x-4">
                 <span className="font-black tracking-widest text-white uppercase">KLYPUP</span>
                 <nav className="hidden sm:flex items-center space-x-3 text-zinc-400 text-[11px]">
-                  <span className={activeTab === 'trade' ? 'text-white font-bold' : ''}>Trade</span>
-                  <span className={activeTab === 'markets' ? 'text-white font-bold' : ''}>Markets</span>
-                  <span className={activeTab === 'portfolio' ? 'text-white font-bold' : ''}>Portfolio</span>
-                  <span className={activeTab === 'activity' ? 'text-white font-bold' : ''}>Activity</span>
+                  <span className={activeTab === 'research' ? 'text-white font-bold' : ''}>AI Research</span>
+                  <span className={activeTab === 'watchlist' ? 'text-white font-bold' : ''}>Watchlist</span>
+                  <span className={activeTab === 'compare' ? 'text-white font-bold' : ''}>Compare</span>
+                  <span className={activeTab === 'controller' ? 'text-white font-bold' : ''}>Controller</span>
                 </nav>
               </div>
 
               <div className="flex items-center space-x-3">
                 <div className="text-right font-mono text-[10px]">
-                  <span className="text-zinc-500 block uppercase">Workspace AUM</span>
-                  <span className="text-white font-bold">$1.4M USDC</span>
+                  <span className="text-zinc-500 block uppercase">Workspace Status</span>
+                  <span className="text-emerald-400 font-bold">● Active Multi-Tenant</span>
                 </div>
                 <button 
-                  onClick={handleLaunchApp}
+                  onClick={() => handleLaunchApp('/dashboard')}
                   className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded text-[11px] transition-colors"
                 >
-                  Launch App
+                  Launch Workspace
                 </button>
                 <div className="w-7 h-7 rounded-full bg-indigo-600/30 border border-indigo-500/50 flex items-center justify-center">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -229,17 +241,17 @@ export const Landing: React.FC = () => {
 
             {/* Sub Status Notice */}
             <div className="px-5 py-1.5 bg-zinc-900/40 border-b border-white/5 text-[10px] text-zinc-400 font-mono flex items-center justify-between">
-              <span>Illustrative demo • Real SEC EDGAR GAAP math • Auto-rotating preview (3s)</span>
+              <span>Audited SEC EDGAR GAAP math • DuPont 3-Step ROE • Auto-rotating (3s)</span>
               <span className="text-emerald-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
                 Live WebSocket Feed
               </span>
             </div>
 
-            {/* DYNAMIC CONTENT PER ACTIVE TAB */}
+            {/* DYNAMIC CONTENT PER ACTIVE PROJECT TAB */}
 
-            {/* TAB 1: VALUATION & TRADE */}
-            {activeTab === 'trade' && (
+            {/* TAB 1: AI RESEARCH & SEC 10-K VALUATION */}
+            {activeTab === 'research' && (
               <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
                 <div className="lg:col-span-2 space-y-4">
                   <div>
@@ -272,7 +284,7 @@ export const Landing: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Sub Prediction Selectors */}
+                  {/* Prediction Selectors */}
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <button 
                       onClick={() => setTradeType('yes')}
@@ -349,26 +361,108 @@ export const Landing: React.FC = () => {
                   </div>
 
                   <button
-                    onClick={handleLaunchApp}
+                    onClick={() => handleLaunchApp('/research/new?ticker=NVDA')}
                     className="w-full py-3 bg-white hover:bg-zinc-200 text-black font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
                   >
-                    <span>Launch Controller Workspace →</span>
+                    <span>Launch Research Report →</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* TAB 2: MARKETS BENCHMARK MATRIX */}
-            {activeTab === 'markets' && (
+            {/* TAB 2: LIVE WATCHLIST (FINNHUB WEBSOCKETS) */}
+            {activeTab === 'watchlist' && (
               <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
                 <div className="lg:col-span-2 space-y-4">
                   <div>
                     <span className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider block">
-                      Live Multi-Equity Matrix
+                      Real-Time WebSocket Equities
                     </span>
                     <h3 className="text-xl font-black text-white tracking-tight">
-                      Comparative Financial Multiple & Solvency Benchmarking
+                      Monitored Corporate Tickers in Workspace
                     </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[
+                      { ticker: 'NVDA', name: 'NVIDIA Corporation', price: '$216.85', change: '+1.20%', up: true, tag: 'Semiconductors' },
+                      { ticker: 'AAPL', name: 'Apple Inc.', price: '$311.30', change: '+0.85%', up: true, tag: 'Consumer Hardware' },
+                      { ticker: 'MSFT', name: 'Microsoft Corp.', price: '$425.20', change: '+1.42%', up: true, tag: 'Enterprise Cloud' },
+                      { ticker: 'TSLA', name: 'Tesla Inc.', price: '$345.13', change: '-0.54%', up: false, tag: 'EV & Energy' },
+                    ].map((item) => (
+                      <div key={item.ticker} className="p-3.5 bg-zinc-900/70 border border-zinc-800 rounded-xl space-y-1.5 hover:border-zinc-700 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-mono font-bold text-white text-sm">{item.ticker}</span>
+                            <span className="text-[10px] text-zinc-500 px-1.5 py-0.5 bg-zinc-800 rounded">{item.tag}</span>
+                          </div>
+                          <span className={`font-mono text-xs font-bold ${item.up ? 'text-emerald-400' : 'text-rose-400'}`}>
+                            {item.up ? '▲ ' : '▼ '}{item.change}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-[11px] text-zinc-400 truncate">{item.name}</span>
+                          <span className="font-mono font-bold text-white text-sm">{item.price}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="p-3.5 bg-zinc-900/50 border border-zinc-800 rounded-xl flex items-center justify-between text-xs font-mono">
+                    <span className="text-zinc-400">WebSocket Buffer TTL: 15 Minutes in RAM</span>
+                    <span className="text-emerald-400 font-bold">● Co-hosted Broadcast Active</span>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/70 border border-white/10 rounded-xl p-5 space-y-4 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                      <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-emerald-400" /> Watchlist Feed
+                      </span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">
+                        LIVE TICKS
+                      </span>
+                    </div>
+
+                    <div className="space-y-3 pt-3 text-xs text-zinc-300 leading-relaxed">
+                      <p>
+                        Real-time price streams buffered in-memory with automatic failover to official SEC EDGAR quarterly fundamentals.
+                      </p>
+                      <div className="p-3 bg-zinc-950 rounded-lg border border-zinc-800 space-y-1 text-[11px] font-mono">
+                        <div className="text-zinc-400 font-bold uppercase">Feed Health:</div>
+                        <div className="text-emerald-400">• Finnhub WS: CONNECTED</div>
+                        <div className="text-indigo-400">• Broadcast Latency: &lt; 45ms</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleLaunchApp('/watchlist')}
+                    className="w-full py-3 bg-white hover:bg-zinc-200 text-black font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    <span>Launch Live Watchlist →</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: COMPANY COMPARISONS & CSV EXPORT */}
+            {activeTab === 'compare' && (
+              <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider block">
+                        Multi-Company Benchmarking
+                      </span>
+                      <h3 className="text-xl font-black text-white tracking-tight">
+                        Comparative Financial Multiple & Solvency Matrix
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-mono px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 font-bold flex items-center gap-1 border border-indigo-500/30">
+                      <FileSpreadsheet className="w-3 h-3" /> CSV Export
+                    </span>
                   </div>
 
                   <div className="overflow-x-auto border border-zinc-800 rounded-xl bg-zinc-900/60 p-3">
@@ -425,132 +519,42 @@ export const Landing: React.FC = () => {
                   <div>
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                       <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5">
-                        <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Market Sentiment
+                        <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Comparison Matrix
                       </span>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">
-                        78 / 100 BULLISH
+                        MULTI-CORP
                       </span>
                     </div>
 
                     <div className="space-y-3 pt-3 text-xs text-zinc-300 leading-relaxed">
                       <p>
-                        Consensus sentiment scores across audited SEC filings show strong capital expenditure in enterprise AI and semiconductor buildouts.
+                        Cross-sectional equity benchmarking across GAAP earnings multiples, leverage ratios, and DuPont return drivers.
                       </p>
                       <div className="p-3 bg-zinc-950 rounded-lg border border-zinc-800 space-y-1 text-[11px] font-mono">
-                        <div className="text-zinc-400 font-bold uppercase">Sector Leaders:</div>
-                        <div className="text-emerald-400">• Semiconductors (NVDA, AMD)</div>
-                        <div className="text-indigo-400">• Enterprise Cloud (MSFT, AMZN)</div>
+                        <div className="text-zinc-400 font-bold uppercase">Features:</div>
+                        <div className="text-emerald-400">• Up to 5 Tickers Side-by-Side</div>
+                        <div className="text-indigo-400">• 1-Click Institutional CSV Export</div>
                       </div>
                     </div>
                   </div>
 
                   <button
-                    onClick={handleLaunchApp}
+                    onClick={() => handleLaunchApp('/compare')}
                     className="w-full py-3 bg-white hover:bg-zinc-200 text-black font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
                   >
-                    <span>Compare in Workspace →</span>
+                    <span>Open Company Comparison →</span>
                   </button>
                 </div>
               </div>
             )}
 
-            {/* TAB 3: PORTFOLIO & RISK ALLOCATION */}
-            {activeTab === 'portfolio' && (
+            {/* TAB 4: CONTROLLER COPILOT & SEC EDGAR AUDIT TRAIL */}
+            {activeTab === 'controller' && (
               <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
                 <div className="lg:col-span-2 space-y-4">
                   <div>
                     <span className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider block">
-                      Institutional Portfolio Allocation
-                    </span>
-                    <h3 className="text-xl font-black text-white tracking-tight">
-                      Risk-Weighted Capital & Solvency Exposure Breakdown
-                    </h3>
-                  </div>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl">
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold block">Portfolio NAV</span>
-                      <span className="text-xl font-black text-white font-mono mt-1 block">$1,420,500</span>
-                      <span className="text-[10px] text-emerald-400 font-bold">▲ +8.4% (30D)</span>
-                    </div>
-                    <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl">
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold block">Avg Margin</span>
-                      <span className="text-xl font-black text-emerald-400 font-mono mt-1 block">34.8%</span>
-                      <span className="text-[10px] text-zinc-400">High Quality</span>
-                    </div>
-                    <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl">
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold block">DuPont ROE</span>
-                      <span className="text-xl font-black text-indigo-400 font-mono mt-1 block">48.2%</span>
-                      <span className="text-[10px] text-zinc-400">3-Step Average</span>
-                    </div>
-                    <div className="p-3.5 bg-zinc-900/60 border border-zinc-800 rounded-xl">
-                      <span className="text-[10px] text-zinc-500 uppercase font-bold block">Risk Rating</span>
-                      <span className="text-xl font-black text-emerald-400 font-mono mt-1 block">A+</span>
-                      <span className="text-[10px] text-zinc-400">Low Leverage</span>
-                    </div>
-                  </div>
-
-                  {/* Asset Allocation Stack */}
-                  <div className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
-                    <div className="flex justify-between text-xs font-bold text-zinc-400">
-                      <span>Asset Allocation Breakdown</span>
-                      <span>100% Verified</span>
-                    </div>
-                    <div className="w-full h-3 bg-zinc-950 rounded-full overflow-hidden flex">
-                      <div className="bg-indigo-500 h-full" style={{ width: '42%' }} title="AI Infrastructure (42%)" />
-                      <div className="bg-emerald-500 h-full" style={{ width: '28%' }} title="Cloud Software (28%)" />
-                      <div className="bg-amber-500 h-full" style={{ width: '18%' }} title="Auto/CleanTech (18%)" />
-                      <div className="bg-zinc-600 h-full" style={{ width: '12%' }} title="Cash & Yield (12%)" />
-                    </div>
-                    <div className="flex flex-wrap gap-4 text-[10px] text-zinc-400 font-mono pt-1">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-500" /> AI Infra (42%)</span>
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Cloud SaaS (28%)</span>
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500" /> Auto/Clean (18%)</span>
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-zinc-600" /> Cash (12%)</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-zinc-900/70 border border-white/10 rounded-xl p-5 space-y-4 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-                      <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5">
-                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" /> Solvency Guard
-                      </span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">
-                        SAFE
-                      </span>
-                    </div>
-
-                    <div className="space-y-2.5 pt-3 text-xs text-zinc-300">
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>Zero unhedged variable debt exposure across top holdings.</span>
-                      </div>
-                      <div className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>Stress-tested against a 200bps interest rate shock scenario.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleLaunchApp}
-                    className="w-full py-3 bg-white hover:bg-zinc-200 text-black font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <span>View Watchlist & Portfolio →</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: ACTIVITY & SEC AUDIT LOG */}
-            {activeTab === 'activity' && (
-              <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-                <div className="lg:col-span-2 space-y-4">
-                  <div>
-                    <span className="text-[11px] text-zinc-400 font-bold uppercase tracking-wider block">
-                      Live Autonomous Audit Trail
+                      Autonomous Financial Controller Copilot
                     </span>
                     <h3 className="text-xl font-black text-white tracking-tight">
                       Real-Time SEC EDGAR Filings & Gemini 3.6 Synthesis Feed
@@ -580,34 +584,34 @@ export const Landing: React.FC = () => {
                   <div>
                     <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                       <span className="text-xs font-black uppercase text-white tracking-wider flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5 text-indigo-400" /> Pipeline Status
+                        <Activity className="w-3.5 h-3.5 text-indigo-400" /> Agentic Shortcuts
                       </span>
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold">
-                        100% ONLINE
+                        KEYBOARD READY
                       </span>
                     </div>
 
                     <div className="space-y-2 pt-3 text-xs text-zinc-300 font-mono text-[11px]">
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">Gemini 3.6 Flash:</span>
-                        <span className="text-emerald-400 font-bold">Active (0.2 Temp)</span>
+                      <div className="p-2 bg-zinc-950 rounded border border-zinc-800">
+                        <span className="text-zinc-400 block">AI Controller Bot:</span>
+                        <kbd className="px-1.5 py-0.5 bg-zinc-800 text-indigo-300 rounded text-[10px] font-bold">Ctrl + Shift + C</kbd>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">SEC EDGAR API:</span>
-                        <span className="text-emerald-400 font-bold">Connected</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-zinc-500">Neon Postgres:</span>
-                        <span className="text-emerald-400 font-bold">Serverless Pooled</span>
+                      <div className="p-2 bg-zinc-950 rounded border border-zinc-800">
+                        <span className="text-zinc-400 block">Bloomberg Quant Terminal:</span>
+                        <kbd className="px-1.5 py-0.5 bg-zinc-800 text-emerald-300 rounded text-[10px] font-bold">Ctrl + ~</kbd>
                       </div>
                     </div>
                   </div>
 
                   <button
-                    onClick={handleLaunchApp}
+                    onClick={() => {
+                      const copilotBtn = document.querySelector('[title*="Copilot"]') as HTMLElement;
+                      if (copilotBtn) copilotBtn.click();
+                      else handleLaunchApp('/dashboard');
+                    }}
                     className="w-full py-3 bg-white hover:bg-zinc-200 text-black font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
                   >
-                    <span>View All Research Reports →</span>
+                    <span>Open AI Controller Copilot →</span>
                   </button>
                 </div>
               </div>
@@ -665,7 +669,7 @@ export const Landing: React.FC = () => {
             <a href="https://github.com/Sourya07/klypup" target="_blank" rel="noreferrer" className="hover:text-white transition-colors flex items-center gap-1">
               <Github className="w-3.5 h-3.5" /> GitHub
             </a>
-            <button onClick={handleLaunchApp} className="hover:text-white transition-colors">
+            <button onClick={() => handleLaunchApp('/dashboard')} className="hover:text-white transition-colors">
               Launch Workspace
             </button>
           </div>

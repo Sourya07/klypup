@@ -2,6 +2,9 @@
 
 > **Multi-tenant AI Financial Intelligence SaaS** for automated equity research and financial controller operations. Analysts and financial controllers can generate deep-dive SEC-grounded reports, execute live quantitative analysis via an in-app **Bloomberg-style Quant Terminal**, track watchlists with real-time price feeds, benchmark companies side-by-side, and collaborate securely within org-scoped workspaces.
 
+> [!NOTE]
+> **⚡ Serverless Cold-Starts**: If running or deployed on on-demand/serverless infrastructure (e.g., Neon Serverless PostgreSQL or free-tier hosting), the server and database connection pool will spin down during inactivity. Please allow **3–5 seconds on the very first API request** for the serverless container to wake up.
+
 ---
 
 ## Features at a Glance

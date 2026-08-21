@@ -163,7 +163,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               />
             </div>
 
-            <div className="pt-2 space-y-2.5">
+            {/* Server Cold-Start Notice */}
+            <div className="text-[11px] text-zinc-400 bg-zinc-50 border border-zinc-200/80 rounded-lg px-3 py-2 text-center leading-tight">
+              ⚡ <span className="font-semibold text-zinc-600">Cold-Start Notice:</span> The serverless backend & database may take 3–5s to wake up on the first request.
+            </div>
+
+            <div className="pt-1 space-y-2.5">
               <button
                 type="submit"
                 disabled={loading || demoLoading}
@@ -172,7 +177,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 {loading ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Signing in...</span>
+                    <span>Signing in... (waking up server)</span>
                   </>
                 ) : (
                   <span>Sign In</span>
