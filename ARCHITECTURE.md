@@ -4,65 +4,102 @@ This document details the architectural design patterns, data pipelines, code la
 
 ---
 
-## 1. High-Level System Architecture
+## 1. High-Level System Architecture & Overall Flow
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                    Client Interfaces (Browser & Shell)                          │
-│                                                                                 │
-│   ┌─────────────────────────┐      ┌─────────────────────────────────────┐     │
-│   │  Dashboard / Watchlist  │      │   API Services Layer (Axios)        │     │
-│   │  / Reports UI           │◄────►│   TanStack Query + Zustand Store    │     │
-│   └─────────────────────────┘      └──────────────┬──────────────────────┘     │
-│                                                    │                            │
-│   ┌─────────────────────────┐                      │                            │
-│   │  In-App Quant Terminal  │                      │                            │
-│   │  (TerminalDrawer.tsx)   │◄─────────────────────┤                            │
-│   └─────────────────────────┘                      │                            │
-│                                                    │ HTTP (REST)                │
-│   ┌─────────────────────────┐                      │                            │
-│   │   WebSocketContext      │◄── WS events ────────┤                            │
-│   │  (STOCK_UPDATE events)  │                      │                            │
-│   └─────────────────────────┘                      │                            │
-│                                                    │                            │
-│   ┌─────────────────────────┐                      │                            │
-│   │  Standalone Shell CLI   │◄─────────────────────┘                            │
-│   │  (scripts/klypup-cli)   │                                                   │
-│   └─────────────────────────┘                                                   │
-└───────────────────────────────────────────────────┼────────────────────────────┘
-                                                     │
-                            ┌────────────────────────▼──────────────────────────┐
-                            │         Backend: Express.js Server                │
-                            │                                                   │
-                            │  ┌──────────────┐    ┌──────────────────────────┐ │
-                            │  │ Express      │    │   WebSocket Server (ws)  │ │
-                            │  │ Router       │    │   broadcast() → clients  │ │
-                            │  └──────┬───────┘    └──────────────────────────┘ │
-                            │         │                                          │
-                            │  ┌──────▼──────────────────────────────────────┐  │
-                            │  │              Feature Modules                 │  │
-                            │  │  Auth │ Research │ Watchlist │ Compare │... │  │
-                            │  └──────┬──────────────────────────────────────┘  │
-                            │         │                                          │
-                            │  ┌──────▼──────────┐   ┌─────────────────────┐   │
-                            │  │ Research        │   │   Memory Cache      │   │
-                            │  │ Background Job  │   │   (RAM, 15-min TTL) │   │
-                            │  └──────┬──────────┘   └─────────────────────┘   │
-                            │         │                                          │
-                            │  ┌──────▼──────────┐                              │
-                            │  │  Prisma Client  │                              │
-                            │  └──────┬──────────┘                              │
-                            └─────────┼─────────────────────────────────────────┘
-                                      │
-          ┌───────────────────────────▼────────────────────────────────┐
-          │                    Storage Layer                           │
-          │              Neon Serverless PostgreSQL                    │
-          └────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    %% ==========================================
+    %% 1. CLIENT / USER INTERFACE LAYER
+    %% ==========================================
+    subgraph ClientLayer["🖥️ 1. Client & Presentation Tier (React 18 + Vite + Tailwind)"]
+        Landing["☁️ Onyx Landing Showcase\n(Auto-Rotating 3s Preview & Cloud Canvas)"]
+        AuthModal["🔐 Auth Modal Card\n(1-Click Fast Track Developer Demo)"]
+        Dashboard["📊 Workspace Dashboard\n(Financial Telemetry & Hero Banner)"]
+        ReportsView["📄 Attributed SEC Reports\n(DuPont 3-Step ROE & Citations)"]
+        CompareView["⚖️ Multi-Company Matrix\n(Side-by-Side Benchmarks & CSV Export)"]
+        WatchlistView["📈 Live Watchlist\n(WebSocket Price Ticker Grid)"]
+        BotWidget["🤖 Floating AI Controller Bot\n(Ctrl + Shift + C | 3-Step Live Progress)"]
+        QuantTerminal["⌨️ Bloomberg Quant Terminal\n(Ctrl + ~ | Monospace REPL Engine)"]
+        ShellCLI["💻 Standalone Node.js CLI\n(scripts/klypup-cli.mjs)"]
+    end
 
-          ┌─────────────────────────────────────────────────────────────────────────┐
-          │                      External Data & AI Services                        │
-          │  Finnhub WebSocket/REST │ Yahoo Finance API │ SEC EDGAR │ Gemini 3.6    │
-          └─────────────────────────────────────────────────────────────────────────┘
+    %% ==========================================
+    %% 2. API GATEWAY & WEBSOCKET LAYER
+    %% ==========================================
+    subgraph GatewayLayer["⚡ 2. API Gateway & Middleware Tier (Express.js + TypeScript)"]
+        Router["🛣️ Express REST Router\n(/api/v1/*)"]
+        ZodGuard["🛡️ Zod Validation Middleware\n(packages/shared Schemas)"]
+        JWTAuth["🔑 JWT RS256 Auth & RBAC\n(ADMIN, ANALYST, VIEWER)"]
+        WSServer["📡 Co-Hosted WebSocket Server\n(Broadcasts STOCK_UPDATE Events)"]
+    end
+
+    %% ==========================================
+    %% 3. BUSINESS LOGIC & AGENTIC ENGINES
+    %% ==========================================
+    subgraph CoreServices["⚙️ 3. Core Domain Feature Modules & Agentic Services"]
+        AuthService["Auth & Multi-Tenancy Service\n(Org Isolation & User Sessions)"]
+        ResearchEngine["🔬 AI Research Engine\n(Asynchronous Report Generation)"]
+        ControllerAgent["🤖 AI Financial Controller Service\n(Autonomous SEC 10-K & DuPont Auditor)"]
+        DuPontEngine["📐 DuPont 3-Step ROE Calculator\n(Margin × Turnover × Leverage)"]
+        RiskAuditor["🚨 Financial Risk & Red Flag Auditor\n(Accrual Anomaly & Solvency Scoring)"]
+        WatchlistEngine["📈 Watchlist & Live Buffer Engine\n(RAM In-Memory Cache: 15-min TTL)"]
+        CompareEngine["⚖️ Multi-Company Comparison Engine\n(Consensus Multiple Aggregator)"]
+    end
+
+    %% ==========================================
+    %% 4. EXTERNAL DATA & AI PROVIDERS
+    %% ==========================================
+    subgraph ExternalAPIs["🌐 4. External Financial APIs & Foundation Models"]
+        SEC_EDGAR["🏛️ U.S. SEC EDGAR API\n(data.sec.gov XBRL Company Facts)"]
+        GeminiAI["🧠 Google Gemini API\n(gemini-3.6-flash Model)"]
+        FinnhubWS["⚡ Finnhub WebSocket & REST\n(Live Tick Streams & Quotes)"]
+        YahooFinance["📊 Yahoo Finance API\n(P/E Multiples & Consensus Market Data)"]
+    end
+
+    %% ==========================================
+    %% 5. STORAGE & DATABASE TIER
+    %% ==========================================
+    subgraph StorageTier["💾 5. Database & Storage Tier"]
+        PrismaORM["💎 Prisma ORM Client\n(Type-Safe Schema & Migrations)"]
+        NeonDB[("🐘 Neon Serverless PostgreSQL\n(Multi-Tenant Org-Scoped Data)")]
+    end
+
+    %% ==========================================
+    %% INTERACTION FLOW CONNECTIONS
+    %% ==========================================
+    Landing --> AuthModal
+    AuthModal -->|Fast Track Sign-In| Router
+    Dashboard & ReportsView & CompareView & BotWidget & QuantTerminal -->|REST API (Axios 60s)| Router
+    ShellCLI -->|HTTP / Direct CLI| Router
+    WatchlistView -.->|Live WS Subscriptions| WSServer
+
+    Router --> ZodGuard --> JWTAuth
+    JWTAuth --> AuthService
+    JWTAuth --> ResearchEngine
+    JWTAuth --> ControllerAgent
+    JWTAuth --> WatchlistEngine
+    JWTAuth --> CompareEngine
+
+    ControllerAgent --> DuPontEngine
+    ControllerAgent --> RiskAuditor
+    ResearchEngine --> DuPontEngine
+    ResearchEngine --> RiskAuditor
+
+    ControllerAgent -->|1. Ingest XBRL Facts| SEC_EDGAR
+    ResearchEngine -->|1. Ingest Form 10-K/10-Q| SEC_EDGAR
+    ResearchEngine -->|2. Ingest Quote Snapshots| YahooFinance
+    ResearchEngine -->|3. Grounded Synthesis| GeminiAI
+    ControllerAgent -->|2. Grounded Synthesis| GeminiAI
+
+    WatchlistEngine -->|Stream Real-Time Ticks| FinnhubWS
+    WatchlistEngine -->|Emit Live Updates| WSServer
+    WSServer -.->|STOCK_UPDATE Ticks| WatchlistView
+
+    AuthService --> PrismaORM
+    ResearchEngine --> PrismaORM
+    WatchlistEngine --> PrismaORM
+    CompareEngine --> PrismaORM
+    PrismaORM --> NeonDB
 ```
 
 ---
